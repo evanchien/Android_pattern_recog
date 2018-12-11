@@ -32,7 +32,7 @@ int thresh = 200;
 int max_thresh = 255;
 RNG rng(12345);
 int AREA_PER_ROW =6;
-float hsv_delta = 15;
+float hsv_delta = 10;
 int SIZE = 4;
 int height, width;
 
@@ -74,9 +74,9 @@ Java_com_example_evan_camera_1analysis2_MainActivity_matProcessing(JNIEnv *env, 
 
     // pad area for picture
     pad_area.x = (int)(width/8);
-    pad_area.y = 0;
+    pad_area.y = (int)(height/8);
     pad_area.width = (int)(3*width/4);
-    pad_area.height = height;
+    pad_area.height = (int)(3*height/4);
 
     // pad area for real sample
 //    pad_area.x = (int)(3*width/8);
@@ -94,11 +94,12 @@ Java_com_example_evan_camera_1analysis2_MainActivity_matProcessing(JNIEnv *env, 
 
 
 
-    SimplestCB(image_raw, image_raw, image_hough, 1);
+    SimplestCB(image_raw, image_raw, image_hough, 0.1);
     cv::cvtColor(image_raw, image_raw_hsv, cv::COLOR_BGR2HSV);
 //    image_pad = image_raw(pad_area);
     image_pad = image_hough(pad_area);
     image_pad_hough = image_hough(pad_area);
+//    image_pad_hough = image_pad;
     cv::cvtColor(image_pad, image_pad_hsv, cv::COLOR_BGR2HSV);
     cv::cvtColor(image_pad_hough, image_pad_gray, COLOR_BGR2GRAY);
     vector<Vec3f> circles;
@@ -106,7 +107,9 @@ Java_com_example_evan_camera_1analysis2_MainActivity_matProcessing(JNIEnv *env, 
 
     if (switchKey){
         cv::GaussianBlur( image_pad_gray, image_pad_gray, Size(7, 7), 1, 1 );
-        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, 30, 20, 50, 30, 100 ); //HOUGH_GRADIENT, dp, minDist, CannyHighThreshold, counter thresh, minradius, maxradius
+//        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, 30, 20, 50, 30, 100 );
+        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, 100, 40, 50, 60, 100 );
+        //HOUGH_GRADIENT, dp, minDist, CannyHighThreshold, counter thresh, minradius, maxradius
     }
     else{
         cv::GaussianBlur( image_pad_gray, image_pad_gray, Size(7, 7), 1, 1 );
@@ -158,11 +161,11 @@ Java_com_example_evan_camera_1analysis2_MainActivity_matProcessing(JNIEnv *env, 
             // circle( image_pad_wb, center, 5, Scalar(0,255,0), -1, 8, 0 );
 
             // circle outline
-//            if(radius >40){
+            if(radius >60){
                 circle( image_pad, center, radius, Scalar(0,0,255), 3, 8, 0 );
                 cnt ++;
                 area_list.push_back(center);
-//            }
+            }
 
         }
         tie(group_1, group_2) = area_grouping(area_list);
@@ -187,6 +190,7 @@ Java_com_example_evan_camera_1analysis2_MainActivity_matProcessing(JNIEnv *env, 
 
     }
     Point3f raw_sum(0.0f, 0.0f, 0.0f);
+    image_pad = image_raw(pad_area);
     for (int i=0;i<group_1.size();i++)
     {
         Scalar avg_1;

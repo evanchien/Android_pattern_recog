@@ -254,6 +254,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try{
+            width = 1920;
+            height = 1080;
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
             Size[] jpegSizes = null;
             if (characteristics != null){
@@ -266,13 +268,23 @@ public class MainActivity extends AppCompatActivity {
                     if (jpegSizes[i].getWidth() == width && jpegSizes[i].getHeight() == height){
                         break;
                     }
-                    Log.e("ResolutionError", "Failed to find the target picture resolution");
-                }
-            }
 
-//            Toast toast = Toast.makeText(this,width + "x"+height, Toast.LENGTH_SHORT);
-//            toast.setGravity(Gravity.TOP, 0, 0);
-//            toast.show();
+                }
+                Log.e("ResolutionError", "Failed to find the target picture resolution");
+            }
+//            if (jpegSizes != null && jpegSizes.length > 0){
+//                width = jpegSizes[6].getWidth();
+//                height = jpegSizes[6].getHeight();
+//            }
+
+            Toast toast = Toast.makeText(this,width + "x"+height, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.TOP, 0, 0);
+            toast.show();
+
+            int expCompValue = -5;
+            int isoValue = 200;
+            long exposureTimeValueInMilliseconds = 15;
+
 
             ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
             List<Surface> outputSurface = new ArrayList<>(2);
@@ -280,9 +292,13 @@ public class MainActivity extends AppCompatActivity {
             outputSurface.add(new Surface((textureView.getSurfaceTexture())));
             final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
-            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_OFF);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_OFF);
+            captureBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, isoValue);
+            captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTimeValueInMilliseconds);
             captureBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
+
+//            captureBuilder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, (int) expCompValue);
             int rotation =getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATION.get(rotation));
             File galleryFolder;
@@ -310,13 +326,13 @@ public class MainActivity extends AppCompatActivity {
                     try{
 
                         image = reader.acquireNextImage();
-
+//                        image = reader.acquireLatestImage();
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                         byte[] bytes = new byte[buffer.capacity()];
 
                         width = image.getWidth();
                         height = image.getHeight();
-
+                        buffer.get(bytes);
 
                         if (width != 0){
 
@@ -337,7 +353,6 @@ public class MainActivity extends AppCompatActivity {
                             bmp32.copyPixelsToBuffer(byteBuffer);
                             cvFile = file.getName();
                             cvFile = cvFile.substring(0, cvFile.lastIndexOf("."));
-
                             store_img(satReading+"_"+cvFile+".png", bmp32);
 
                         }
@@ -352,6 +367,7 @@ public class MainActivity extends AppCompatActivity {
                                 image.close();
                             }
 
+
                         }
                     }
                 }
@@ -360,6 +376,12 @@ public class MainActivity extends AppCompatActivity {
                     try{
                         outputStream = new FileOutputStream(file);
                         outputStream.write(bytes);
+                        if(bmp32!=null)
+                        {
+                            bmp32.recycle();
+                            bmp32=null;
+                        }
+
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
