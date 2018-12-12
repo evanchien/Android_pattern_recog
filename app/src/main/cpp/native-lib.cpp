@@ -104,11 +104,15 @@ Java_com_example_evan_camera_1analysis2_MainActivity_matProcessing(JNIEnv *env, 
     cv::cvtColor(image_pad_hough, image_pad_gray, COLOR_BGR2GRAY);
     vector<Vec3f> circles;
     vector<cv::Point> area_list;
-
+    int minDist = 140;
+    int cannyThresh = 40;
+    int houghThresh = 30;
+    int minRad = 70;
+    int maxRad = 100;
     if (switchKey){
         cv::GaussianBlur( image_pad_gray, image_pad_gray, Size(7, 7), 1, 1 );
 //        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, 30, 20, 50, 30, 100 );
-        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, 100, 40, 50, 60, 100 );
+        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, minDist, cannyThresh, houghThresh, minRad, maxRad );
         //HOUGH_GRADIENT, dp, minDist, CannyHighThreshold, counter thresh, minradius, maxradius
     }
     else{

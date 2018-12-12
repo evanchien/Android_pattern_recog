@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
 //            captureBuilder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, (int) expCompValue);
             int rotation =getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATION.get(rotation));
-            File galleryFolder;
+            final File galleryFolder;
 
 
             /*gallery*/
@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
                             bmp32.copyPixelsToBuffer(byteBuffer);
                             cvFile = file.getName();
                             cvFile = cvFile.substring(0, cvFile.lastIndexOf("."));
-                            store_img(satReading+"_"+cvFile+".png", bmp32);
+                            store_img(galleryFolder,satReading+"_"+cvFile+".png", bmp32);
 
                         }
 
@@ -683,10 +683,14 @@ public class MainActivity extends AppCompatActivity {
         return mat;
     }
 
-    public static void store_img(String files, Bitmap bmp){
+    public static void store_img(File galleryFolder, String files, Bitmap bmp){
 
-        File sd = Environment.getExternalStorageDirectory();
-        File dest = new File(sd, files);
+//        File sd = Environment.getExternalStorageDirectory();
+////        if (!sd.exists()){
+////            File tmpDir = new File("/sdcard/featureExtract");
+////            tmpDir.mkdirs();
+////        }
+        File dest = new File(galleryFolder, files);
 
         try (FileOutputStream out = new FileOutputStream(dest)) {
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
