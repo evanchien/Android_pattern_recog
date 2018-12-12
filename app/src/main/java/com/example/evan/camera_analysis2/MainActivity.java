@@ -353,10 +353,10 @@ public class MainActivity extends AppCompatActivity {
                             bmp32.copyPixelsToBuffer(byteBuffer);
                             cvFile = file.getName();
                             cvFile = cvFile.substring(0, cvFile.lastIndexOf("."));
-                            store_img(galleryFolder,satReading+"_"+cvFile+".png", bmp32);
+//                            store_img(galleryFolder,satReading+"_"+cvFile+".png", bmp32);
 
                         }
-
+                        store_img(galleryFolder,satReading+"_"+cvFile+".png", bmp32);
                         save(bytes);
 
 
@@ -376,11 +376,11 @@ public class MainActivity extends AppCompatActivity {
                     try{
                         outputStream = new FileOutputStream(file);
                         outputStream.write(bytes);
-                        if(bmp32!=null)
-                        {
+//                        if(bmp32!=null)
+//                        {
                             bmp32.recycle();
                             bmp32=null;
-                        }
+//                        }
 
 
                     } catch (FileNotFoundException e) {
@@ -406,7 +406,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
                     Toast.makeText(MainActivity.this, "Save"+file, Toast.LENGTH_SHORT).show();
-
                     createCameraPreview();
 
                 }

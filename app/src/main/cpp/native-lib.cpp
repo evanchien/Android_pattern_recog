@@ -108,16 +108,16 @@ Java_com_example_evan_camera_1analysis2_MainActivity_matProcessing(JNIEnv *env, 
     int cannyThresh = 40;
     int houghThresh = 30;
     int minRad = 70;
-    int maxRad = 100;
+    int maxRad = 90;
     if (switchKey){
-        cv::GaussianBlur( image_pad_gray, image_pad_gray, Size(7, 7), 1, 1 );
-//        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, 30, 20, 50, 30, 100 );
-        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, minDist, cannyThresh, houghThresh, minRad, maxRad );
-        //HOUGH_GRADIENT, dp, minDist, CannyHighThreshold, counter thresh, minradius, maxradius
+//        cv::GaussianBlur( image_pad_gray, image_pad_gray, Size(11, 11), 1, 1 );
+        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, 30, 20, 50, 30, 100 );
+//        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, minDist, cannyThresh, houghThresh, minRad, maxRad );
+//        HOUGH_GRADIENT, dp, minDist, CannyHighThreshold, counter thresh, minradius, maxradius
     }
     else{
-        cv::GaussianBlur( image_pad_gray, image_pad_gray, Size(7, 7), 1, 1 );
-        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, 30, 20, 60, 30, 100 );
+        cv::GaussianBlur( image_pad_gray, image_pad_gray, Size(11, 11), 1, 1 );
+        cv::HoughCircles( image_pad_gray, circles, HOUGH_GRADIENT, 1, minDist, cannyThresh, houghThresh, minRad, maxRad );
 
     }
 
